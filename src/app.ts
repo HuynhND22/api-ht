@@ -21,6 +21,7 @@ import postsRouter from "./routes/posts";
 import categoriesRouter from "./routes/categories";
 import booksRouter from "./routes/books";
 import authRouter from "./routes/authentications";
+import path from 'path';
 
 import { AppDataSource } from './database';
 // Setup constant variables
@@ -36,7 +37,8 @@ AppDataSource.initialize().then(async () => {
 
 	// Body parser
 	app.use(express.json());
-
+  	app.use(express.static(path.join(__dirname, 'public')));
+  	app.use(express.static(path.resolve('./public')));
 	// Detailed server logging
 	app.use(morgan("dev"));
 
