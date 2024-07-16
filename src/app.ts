@@ -50,7 +50,11 @@ AppDataSource.initialize().then(async () => {
 	);
 
 	// Enable CORS
-	app.use(cors({ origin: '*' }));
+	app.use(cors({
+	  origin: '*',
+	  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+	  allowedHeaders: ['Content-Type', 'Authorization']
+	}));
 
 	// Security Headers
 	app.use(helmet());
