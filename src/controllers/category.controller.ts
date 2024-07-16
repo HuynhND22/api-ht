@@ -9,7 +9,7 @@ const repository = AppDataSource.getRepository(Category);
 
 const getAll = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const categories = await repository.find({where: {parent: IsNull()}, order: {createdAt: 'DESC'}, relations: ['children']});
+      const categories = await repository.find({where: {parent: IsNull()}, order: {createdAt: 'DESC'}, relations: ['children', 'parent']});
       if (categories.length === 0) {
         return res.status(204).send({
           error: 'No content',
@@ -89,7 +89,7 @@ const softDelete = async (req: Request, res: Response, next: any) => {
   
   const getDeleted = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const categories = await repository.find({ withDeleted: true, where: {deletedAt: Not(IsNull()), parent: IsNull() }, order: {deletedAt: 'DESC'}, relations: ['children']});
+      const categories = await repository.find({ withDeleted: true, where: {deletedAt: Not(IsNull()), parent: IsNull() }, order: {deletedAt: 'DESC'}, relations: ['children', 'parent']});
       if (categories.length === 0) {
         res.status(204).send({
           error: 'No content',
