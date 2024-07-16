@@ -1,0 +1,17 @@
+CREATE PROCEDURE CalculateTotalPrice
+    @OrderId INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    DECLARE @TotalPrice INT;
+
+    SELECT @TotalPrice = SUM((price * quantity * (100 - discount)) / 100)
+    FROM dbo.OrderDetails
+    WHERE orderId = @OrderId;
+
+    SELECT @TotalPrice AS TotalPrice;
+END;
+
+
+EXEC CalculateTotalPrice @OrderId = 12
