@@ -68,15 +68,15 @@ import { Book } from './entities/book.entity';
 
 require('dotenv').config();
 
-const { PGHOST, PGDATABASE, PGUSER, PGPASSWORD, ENDPOINT_ID } = process.env;
+const { PGHOST, PGDATABASE, PGUSER, PGPASSWORD, ENDPOINT_ID, POSTGRES_VERCEL_HOST, POSTGRES_VERCEL_DATABASE, POSTGRES_VERCEL_USER, POSTGRES_VERCEL_PASSWORD } = process.env;
 const decodedPassword = decodeURIComponent(`${PGPASSWORD}`);
 
 export const AppDataSource = new DataSource({
   type: 'postgres',
-  host: PGHOST,
-  database: PGDATABASE,
-  username: PGUSER,
-  password: decodedPassword,
+  host: POSTGRES_VERCEL_HOST || PGHOST,
+  database: POSTGRES_VERCEL_DATABASE || PGDATABASE,
+  username: POSTGRES_VERCEL_USER || PGUSER,
+  password: POSTGRES_VERCEL_PASSWORD || decodedPassword,
   port: 5432,
   ssl: true, // Sử dụng SSL
   extra: {
