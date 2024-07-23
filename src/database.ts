@@ -73,16 +73,16 @@ const decodedPassword = decodeURIComponent(`${PGPASSWORD}`);
 
 export const AppDataSource = new DataSource({
   type: 'postgres',
-  host: POSTGRES_VERCEL_HOST || PGHOST,
-  database: POSTGRES_VERCEL_DATABASE || PGDATABASE,
-  username: POSTGRES_VERCEL_USER || PGUSER,
-  password: POSTGRES_VERCEL_PASSWORD || decodedPassword,
+  host: POSTGRES_VERCEL_HOST,
+  database: POSTGRES_VERCEL_DATABASE,
+  username: POSTGRES_VERCEL_USER,
+  password: POSTGRES_VERCEL_PASSWORD,
   port: 5432,
   ssl: true, // Sử dụng SSL
-  extra: {
-    // Thêm các tùy chọn kết nối khác (nếu cần)
-    options: `project=${ENDPOINT_ID}`,
-  },
+  // extra: {
+  //   // Thêm các tùy chọn kết nối khác (nếu cần)
+  //   options: `project=${ENDPOINT_ID}`,
+  // },
   entities: [
     Category, 
     Post, 
