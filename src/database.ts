@@ -89,7 +89,7 @@ export const AppDataSource = new DataSource({
     User, 
     Book
   ],
-  synchronize: false,
+  synchronize: true,
   logging: true,
   // dropSchema: true,
 });

@@ -40,133 +40,75 @@ const getById = async (req: Request, res: Response, next: NextFunction) => {
 }
 
 const create = async (req: any, res: Response, next: NextFunction) => { 
-    try {
-        const storage = multer.diskStorage({
-            contentType: multer.AUTO_CONTENT_TYPE,
-            destination: function (req:Request, file:any, cb:Function) {
-                if (!fs.existsSync(`./public/uploads/posts/`)) {
-                    fs.mkdirSync(`./public/uploads/posts/`, { recursive: true });
-                  }
-              return cb(null, `./public/uploads/posts/`);
-            },
-            filename: function (req:any, file:any, cb:any) {
-              cb(null, Date.now() + '-' + file.originalname)
-              return Date.now() + '-' + file.originalname
+    try {   
+        const product = req.body;
+        const removeSurroundingQuotes = (value:any) => {
+            if (typeof value === 'string' && value.startsWith('"') && value.endsWith('"')) {
+                return value.slice(1, -1);
             }
-        });
+            return value;
+            };
+            Object.keys(product).forEach(key => {
+            product[key] = removeSurroundingQuotes(product[key]);
+            });
 
-        const upload = multer({ storage: storage }).single("images");
+        const images = req.file.key
 
-        await upload(req, res, async function (err:any) {
-            if (err) {
-                console.log(err);
-                throw err;
-            } else {
-                try {   
-                    const product = req.body;
-                    const removeSurroundingQuotes = (value:any) => {
-                        if (typeof value === 'string' && value.startsWith('"') && value.endsWith('"')) {
-                          return value.slice(1, -1);
-                        }
-                        return value;
-                      };
-                      Object.keys(product).forEach(key => {
-                        product[key] = removeSurroundingQuotes(product[key]);
-                      });
-
-                    let images  
-                    if (req.file?.filename) images = 'uploads/posts/' + req.file?.filename
-                    const saveData = {
-                        name: product.name,
-                        categoryId: product.categoryId,
-                        description: product.description,
-                        content: product.content,
-                        cover: images
-                    }
-                    const result = await repository.save(saveData);
-                    const success = await repository.findOne({where: {postId: result.postId}, relations: ['category']})
-                    return res.status(200).json('success');
-                } catch (error:any) {
-                    if(error.number == 2627) {
-                        const message = handleUniqueError(error);
-                        return res.status(400).json({ error: message });
-                    }
-                    console.log(error);
-                    return res.status(500).json({ error: "Transaction failed" });
-                }
-            }
-        });      
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: "Internal server error" });
+        const saveData = {
+            name: product.name,
+            categoryId: product.categoryId,
+            description: product.description,
+            content: product.content,
+            cover: images
+        }
+        const result = await repository.save(saveData);
+        const success = await repository.findOne({where: {postId: result.postId}, relations: ['category']})
+        return res.status(200).json(success);
+    } catch (error:any) {
+        if(error.number == 2627) {
+            const message = handleUniqueError(error);
+            return res.status(400).json({ error: message });
+        }
+        console.log(error);
+        return res.status(500).json({ error: "Internal server error" });
     }
 }
 
 const update = async (req:any, res:Response, next: NextFunction) => {
-    try {
-        const storage = multer.diskStorage({
-            contentType: multer.AUTO_CONTENT_TYPE,
-            destination: function (req:Request, file:any, cb:Function) {
-                if (!fs.existsSync(`./public/uploads/posts/`)) {
-                    fs.mkdirSync(`./public/uploads/posts/`, { recursive: true });
-                  }
-              return cb(null, `./public/uploads/posts/`);
-            },
-            filename: function (req:any, file:any, cb:any) {
-              cb(null, Date.now() + '-' + file.originalname)
-              return Date.now() + '-' + file.originalname
+     
+    try {   
+        const postId = parseInt(req.params.id);
+        const found:any = await repository.findOne({where: {postId: postId}});
+        if (!found) return res.sendStatus(410);
+
+        const product = req.body;
+        const removeSurroundingQuotes = (value:any) => {
+            if (typeof value === 'string' && value.startsWith('"') && value.endsWith('"')) {
+                return value.slice(1, -1);
             }
-        });
+            return value;
+            };
+            Object.keys(product).forEach(key => {
+            product[key] = removeSurroundingQuotes(product[key]);
+            });
 
-        const upload = multer({ storage: storage }).single("images");
-
-        await upload(req, res, async function (err:any) {
-            if (err) {
-                console.log(err);
-                throw err;
-            } else {
-                try {   
-                    const postId = parseInt(req.params.id);
-                    const found:any = await repository.findOne({where: {postId: postId}});
-                    if (!found) return res.sendStatus(410);
-
-                    const product = req.body;
-                    const removeSurroundingQuotes = (value:any) => {
-                        if (typeof value === 'string' && value.startsWith('"') && value.endsWith('"')) {
-                          return value.slice(1, -1);
-                        }
-                        return value;
-                      };
-                      Object.keys(product).forEach(key => {
-                        product[key] = removeSurroundingQuotes(product[key]);
-                      });
-
-                    let images  
-                    if (req.file?.filename) images = 'uploads/posts/' + req.file?.filename
-                    const saveData = {
-                        name: product.name,
-                        categoryId: product.categoryId,
-                        description: product.description,
-                        content: product.content,
-                        cover: images
-                    }
-                    Object.assign(found, saveData)
-                    const result = await repository.save(found);
-                    const success = await repository.findOne({where: {postId: result.postId}, relations: ['category']})
-                    return res.status(200).json('success');
-                } catch (error:any) {
-                    if(error.number == 2627) {
-                        const message = handleUniqueError(error);
-                        return res.status(400).json({ error: message });
-                    }
-                    console.log(error);
-                    return res.status(500).json({ error: "Transaction failed" });
-                }
-            }
-        });      
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: "Internal server error" });
+        let images
+        if (req.file) images = req.file.key
+        const saveData = {...product, cover: images}
+        
+            console.log(saveData)
+     
+        Object.assign(found, saveData)
+        const result = await repository.save(found);
+        const success = await repository.findOne({where: {postId: result.postId}, relations: ['category']})
+        return res.status(200).json(success);
+    } catch (error:any) {
+        if(error.number == 2627) {
+            const message = handleUniqueError(error);
+            return res.status(400).json({ error: message });
+        }
+        console.log(error);
+        return res.status(500).json({ error: "Transaction failed" });
     }
 }
 

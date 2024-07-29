@@ -26,7 +26,7 @@ export class Post extends BaseEntity {
   @Column({ type: 'int', nullable: true })
   view?: number;
 
-  @Column({ type: 'int' })
+  @Column({ type: 'int', nullable: true })
   statusId: number;
 
   @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
