@@ -42,15 +42,15 @@ const getById = async (req: Request, res: Response, next: NextFunction) => {
 const create = async (req: any, res: Response, next: NextFunction) => { 
     try {   
         const product = req.body;
-        const removeSurroundingQuotes = (value:any) => {
-            if (typeof value === 'string' && value.startsWith('"') && value.endsWith('"')) {
-                return value.slice(1, -1);
-            }
-            return value;
-            };
-            Object.keys(product).forEach(key => {
-            product[key] = removeSurroundingQuotes(product[key]);
-            });
+        // const removeSurroundingQuotes = (value:any) => {
+        //     if (typeof value === 'string' && value.startsWith('"') && value.endsWith('"')) {
+        //         return value.slice(1, -1);
+        //     }
+        //     return value;
+        //     };
+        //     Object.keys(product).forEach(key => {
+        //     product[key] = removeSurroundingQuotes(product[key]);
+        //     });
 
         const images = req.file.key
 
@@ -82,15 +82,15 @@ const update = async (req:any, res:Response, next: NextFunction) => {
         if (!found) return res.sendStatus(410);
 
         const product = req.body;
-        const removeSurroundingQuotes = (value:any) => {
-            if (typeof value === 'string' && value.startsWith('"') && value.endsWith('"')) {
-                return value.slice(1, -1);
-            }
-            return value;
-            };
-            Object.keys(product).forEach(key => {
-            product[key] = removeSurroundingQuotes(product[key]);
-            });
+        // const removeSurroundingQuotes = (value:any) => {
+        //     if (typeof value === 'string' && value.startsWith('"') && value.endsWith('"')) {
+        //         return value.slice(1, -1);
+        //     }
+        //     return value;
+        //     };
+        //     Object.keys(product).forEach(key => {
+        //     product[key] = removeSurroundingQuotes(product[key]);
+        //     });
 
         let images
         if (req.file) images = req.file.key
