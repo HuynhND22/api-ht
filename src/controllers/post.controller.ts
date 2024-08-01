@@ -28,10 +28,14 @@ const getAll = async (req: Request, res: Response, next: NextFunction) => {
 
 const getById = async (req: Request, res: Response, next: NextFunction) => { 
     try {
-        const product = await repository.findOne({
+        const product:any = await repository.findOne({
             where: { postId: parseInt(req.params.id) },
             relations: ['category'],
         });
+        const saveData = {...product, view: product.view + 1}
+     
+        Object.assign(product, saveData)
+        await repository.save(product);
         product ? res.status(200).json(product) : res.sendStatus(410)
     } catch (error) {
         console.error(error);

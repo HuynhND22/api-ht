@@ -23,7 +23,7 @@ export class Post extends BaseEntity {
   @Column({ type: 'varchar', nullable: true })
   cover?: string;
 
-  @Column({ type: 'int', nullable: true })
+  @Column({ type: 'int', nullable: true, default: 0 })
   view?: number;
 
   @Column({ type: 'int', nullable: true })
