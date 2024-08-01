@@ -188,7 +188,7 @@ const getByCategory = async (req:Request, res:Response) => {
         const searchCondition = search ? { name: Like(`%${search}%`) } : {};
 
         const {categoryId} = req.params;
-        const products = await repository.find({where: {statusId: 41, categoryId: parseInt(categoryId), ...searchCondition}, relations: ['images', 'category', 'supplier', 'status', 'productSizes.size'], order: {createdAt: 'DESC'}});
+        const products = await repository.find({where: {categoryId: parseInt(categoryId), ...searchCondition}, relations: ['category'], order: {createdAt: 'DESC'}});
         if (products.length === 0) {
             return res.status(204).send({
                 error: "No content",
@@ -206,7 +206,7 @@ const client = async (req:Request, res:Response) => {
         const search = req.query.search
         const searchCondition = search ? { name: Like(`%${search}%`) } : {};
 
-        const products = await repository.find({where: {statusId: 41, ...searchCondition}, relations: ['category'], order: {createdAt: 'DESC'}});
+        const products = await repository.find({where: {...searchCondition}, relations: ['category'], order: {createdAt: 'DESC'}});
         if (products.length === 0) {
             return res.status(204).send({
                 error: "No content",
