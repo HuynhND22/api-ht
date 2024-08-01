@@ -208,9 +208,14 @@ const getByCategory = async (req:Request, res:Response) => {
 const client = async (req:Request, res:Response) => {
     try {
         const search = req.query.search
+        const limit: any = req.query.limit ? req.query.limit : 30
         const searchCondition = search ? { name: Like(`%${search}%`) } : {};
 
-        const products = await repository.find({where: {...searchCondition}, relations: ['category'], order: {createdAt: 'DESC'}});
+        function getLimitOptions(limit: number): { take?: number } {
+            return limit > 0 ? { take: limit } : {};
+          }
+
+        const products = await repository.find({where: {...searchCondition}, ...getLimitOptions(parseInt(limit)), relations: ['category'], order: {createdAt: 'DESC'}});
         if (products.length === 0) {
             return res.status(204).send({
                 error: "No content",
