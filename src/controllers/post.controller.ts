@@ -3,7 +3,7 @@ import { AppDataSource } from "../database";
 import { Post } from "../entities/post.entity";
 import { handleUniqueError } from "../helpers/handleUniqueError";
 import fs from "fs";
-import { IsNull, Not, Like, ILike } from "typeorm";
+import { IsNull, Not, Like, ILike, createQueryBuilder } from "typeorm";
 import checkUnique from "../helpers/checkUnique";
 
 const multer = require('multer');
@@ -209,13 +209,24 @@ const client = async (req:Request, res:Response) => {
     try {
         const search = req.query.search
         const limit: any = req.query.limit ? req.query.limit : 0
-        const searchCondition = search ? { name: ILike(`%${search}%`) } : {};
+        // const searchCondition = search ? { name: ILike(`%${search}%`) } : {};
 
-        function getLimitOptions(limit: number): { take?: number } {
-            return limit > 0 ? { take: limit } : {};
+        // function getLimitOptions(limit: number): { take?: number } {
+        //     return limit > 0 ? { take: limit } : {};
+        // }
+        // const products = await repository.find({where: {...searchCondition}, ...getLimitOptions(parseInt(limit)), relations: ['category'], order: {createdAt: 'DESC'}});
+
+        const query = repository.createQueryBuilder('post')
+            .leftJoinAndSelect('post.category', 'category')
+            .where('unaccent(post.name) ILIKE unaccent(:search)', { search: `%${search}%` })
+            .orderBy('post.createdAt', 'DESC');
+
+        if (limit > 0) {
+            query.take(limit);
         }
 
-        const products = await repository.find({where: {...searchCondition}, ...getLimitOptions(parseInt(limit)), relations: ['category'], order: {createdAt: 'DESC'}});
+        const products = await query.getMany();
+
         if (products.length === 0) {
             return res.status(204).send({
                 error: "No content",
