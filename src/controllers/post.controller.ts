@@ -208,7 +208,8 @@ const getByCategory = async (req:Request, res:Response) => {
 const client = async (req:Request, res:Response) => {
     try {
         const search = req.query.search
-        const limit: any = req.query.limit ? req.query.limit : 0
+        let limit: any = req.query.limit ? req.query.limit : 0
+        limit = parseInt(limit)
         // const searchCondition = search ? { name: ILike(`%${search}%`) } : {};
 
         // function getLimitOptions(limit: number): { take?: number } {
