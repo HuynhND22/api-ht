@@ -219,11 +219,14 @@ const client = async (req:Request, res:Response) => {
 
         const query = repository.createQueryBuilder('post')
             .leftJoinAndSelect('post.category', 'category')
-            .where('unaccent(post.name) ILIKE unaccent(:search)', { search: `%${search}%` })
             .orderBy('post.createdAt', 'DESC');
 
         if (limit > 0) {
             query.take(limit);
+        }
+
+        if (search) {
+            query.where('unaccent(post.name) ILIKE unaccent(:search)', { search: `%${search}%` });
         }
 
         const products = await query.getMany();
