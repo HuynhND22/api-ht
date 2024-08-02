@@ -3,7 +3,7 @@ import { AppDataSource } from "../database";
 import { Post } from "../entities/post.entity";
 import { handleUniqueError } from "../helpers/handleUniqueError";
 import fs from "fs";
-import { IsNull, Not, Like } from "typeorm";
+import { IsNull, Not, Like, ILike } from "typeorm";
 import checkUnique from "../helpers/checkUnique";
 
 const multer = require('multer');
@@ -208,12 +208,12 @@ const getByCategory = async (req:Request, res:Response) => {
 const client = async (req:Request, res:Response) => {
     try {
         const search = req.query.search
-        const limit: any = req.query.limit ? req.query.limit : 30
-        const searchCondition = search ? { name: Like(`%${search}%`) } : {};
+        const limit: any = req.query.limit ? req.query.limit : 0
+        const searchCondition = search ? { name: ILike(`%${search}%`) } : {};
 
         function getLimitOptions(limit: number): { take?: number } {
             return limit > 0 ? { take: limit } : {};
-          }
+        }
 
         const products = await repository.find({where: {...searchCondition}, ...getLimitOptions(parseInt(limit)), relations: ['category'], order: {createdAt: 'DESC'}});
         if (products.length === 0) {
